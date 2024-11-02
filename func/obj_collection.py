@@ -74,7 +74,7 @@ def equation_table(k, equation, dict_main, dict_right):
     return [dict_main, dict_right]
 
 
-def object_table(res, variable_names, table_main, k):
+def object_table(res, variable_names, table_main, k, title):
     """
         Collecting the obtained objects (system/equation) into a common table
 
@@ -84,23 +84,26 @@ def object_table(res, variable_names, table_main, k):
         res : Pareto front of detected equations/systems
         table_main: List of dictionaries
         k : Number of equations/system (final)
+        title : name of task
 
         Returns
         -------
         table_main: [{'variable_name1': [{'structure1':[coef1, coef2,...],'structure2':[],...},{'structure1_r':[],'structure2_r':[],...}]},
                     {'variable_name2': [{'structure1':[coef1, coef2,...],'structure2':[],...},{'structure1_r':[],'structure2_r':[],...}]}]
     """
+
+    load_filter = __import__(f'tasks.example_{title}', fromlist=[''])
+    filter_func = getattr(load_filter, 'filter_condition', lambda *args: True)
+
     for list_SoEq in res:  # List SoEq - an object of the class 'epde.structure.main_structures.SoEq'
         for SoEq in list_SoEq:
-            # if all([v < 10 for v in SoEq.obj_fun[:len(variable_names)]]): # and (max(SoEq.obj_fun[len(variable_names):]) < 4):  # to filter the quality and the complexity of equations/system
-            # if max(SoEq.obj_fun[len(variable_names):]) == 4 and min(SoEq.obj_fun[len(variable_names):]) == 4:  # to filter the complexity of equations/system
-            # variable_names = SoEq.vals.equation_keys # params for object_epde_search
-            for n, value in enumerate(variable_names):
-                gene = SoEq.vals.chromosome.get(value)
-                table_main[n][value] = equation_table(k, gene.value, *table_main[n][value])
+            if filter_func(SoEq, variable_names):
+                for n, value in enumerate(variable_names):
+                    gene = SoEq.vals.chromosome.get(value)
+                    table_main[n][value] = equation_table(k, gene.value, *table_main[n][value])
 
-            k += 1
-            print(k)
+                k += 1
+                print(k)
 
     return table_main, k
 

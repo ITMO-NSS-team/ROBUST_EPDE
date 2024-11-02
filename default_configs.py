@@ -52,6 +52,7 @@ DEFAULT_CONFIG_EBS = '''
 
 "BAMT_config": "commentary",
 "glob_bamt": {
+"nets": "Continuous",
 "n_bins": 10,
 "sample_k": 35,
 "lambda": 0.001,
@@ -70,12 +71,15 @@ DEFAULT_CONFIG_EBS = '''
 "glob_solver": {
 "mode": "NN",
 "reverse": false,
-"required_bc_ord": [2, 2]
+"required_bc_ord": [2, 2],
+"load_result": false
 },
 "Optimizer": {
 "learning_rate":1e-4,
 "lambda_bound":10,
-"optimizer":"Adam"
+"lambda_operator":1,
+"optimizer":"Adam",
+"epochs":5e6
 },
 "Cache":{
 "use_cache":true,
@@ -90,25 +94,23 @@ DEFAULT_CONFIG_EBS = '''
 "grid_point_subset":["central"],
 "h":0.001
 },
-"Verbose":{
-"verbose":true,
-"print_every":null
-},
 "StopCriterion":{
 "eps":1e-5,
 "tmin":1000,
 "tmax":1e5 ,
 "patience":5,
 "loss_oscillation_window":100,
-"no_improvement_patience":1000   	
+"no_improvement_patience":1000,
+"verbose":true,
+"print_every":null   	
 },
 "Matrix":{
 "lp_par":null,
 "cache_model":null
 },
 "Plot":{
-"step_plot_print":false,
-"step_plot_save":false, 
+"step_plot_print":null,
+"step_plot_save":null, 
 "image_save_dir":null
 }
 }

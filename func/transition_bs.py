@@ -3,7 +3,7 @@ import random
 from tedeous.config import Config
 
 
-def solver_view(object_row: dict, cfg: Config) -> list:
+def solver_view(object_row: dict, cfg: Config):
     """
         Transition from the type of BAMT output data to the type required by SOLVER.
 
@@ -100,12 +100,12 @@ def equation_view(equation: dict, cfg: Config, reverse: bool) -> dict:
     variable_names = cfg.params["fit"]["variable_names"]
 
     equation_main = {}
-    unknown_variables = {}  # x1, x2, ..., xn
+    unknown_variables = {}  # x0, x1, x2, ..., xn
     for i in range(dimensionality + 1):
         if reverse:
-            unknown_variables[f'x{i + 1}'] = dimensionality - i  # x1 = 1, x2 = 0, because (epde = [t, x], solver = [x, t])
+            unknown_variables[f'x{i}'] = dimensionality - i  # x1 = 1, x2 = 0, because (epde = [t, x], solver = [x, t])
         else:
-            unknown_variables[f'x{i + 1}'] = i # x1 = 0, x2 = 1, because (epde = [x, t], solver = [x, t])
+            unknown_variables[f'x{i}'] = i # x1 = 0, x2 = 1, because (epde = [x, t], solver = [x, t])
 
     for term_i, value_i in equation.items():
 

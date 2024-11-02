@@ -3,14 +3,11 @@ import math
 import os
 import pickle
 import random
-
 import numpy as np
 import pandas as pd
 import epde.interface.interface as epde_alg
 
 from func import obj_collection as collection
-from func.load_data import *
-
 
 
 def equation_definition(grid, config_epde, title):
@@ -103,10 +100,16 @@ def epde_equations(u, grid_u, derives, cfg, variance, title):
 
     epde_obj, add_tokens = equation_definition(grid_u, cfg, title)
     for test_idx in np.arange(cfg.params["glob_epde"]["test_iter_limit"]):
-        epde_obj = equation_fit(epde_obj, u, derives, cfg, add_tokens)
+        while True:
+            try:
+                epde_obj = equation_fit(epde_obj, u, derives, cfg, add_tokens)
+                break
+            except Exception as e:
+                print(f"Error: {e}. Restart algorithm...")
+
         res = epde_obj.equations(only_print=False, num=cfg.params["results"]["level_num"])  # result search
 
-        table_main, k = collection.object_table(res, variable_names, table_main, k)
+        table_main, k = collection.object_table(res, variable_names, table_main, k, title)
         # To save temporary data
         with open(f'data/{title}/epde_result/table_main_general.pickle', 'wb') as f:
             pickle.dump(table_main, f, pickle.HIGHEST_PROTOCOL)

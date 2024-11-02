@@ -15,9 +15,9 @@ Program complex for robust training of models in the form of differential equati
 ---
 ## Examples & Tutorials
 
-Before running the program component, the configuration of each module must be set up. This is done in `func/load_data.py`:
+Before starting the program component, the configuration of each module must be set up. This is done for each task separately in the folder `tasks/`. The file should be named `tasks/example_{title}.py`. Where all additional functions are implemented, starting with `def load_data():`
 ```Python
-    def example_equation():
+    def load_data():
     """
         path -> data -> parameters -> derivatives (optional) -> grid -> 
         -> boundary conditions (optional) -> modules config (optional)
@@ -28,9 +28,10 @@ Before running the program component, the configuration of each module must be s
     derives = None  # if there are no derivatives
 
     grid = """YOUR CODE HERE"""
-    param = """YOUR CODE HERE"""
-
-    bconds = False  # if there are no boundary conditions
+    params = """YOUR CODE HERE"""
+    
+    domain = """YOUR CODE HERE"""
+    boundaries = False  # if there are no boundary conditions
 
     noise = False
     variance_arr = ["""YOUR CODE HERE"""] if noise else [0]
@@ -38,7 +39,7 @@ Before running the program component, the configuration of each module must be s
     global_modules = {
         "global_config": {
             "discovery_module": "EPDE",
-            "dimensionality": data.ndim
+            "dimensionality": # (starts from 0 - [t,], 1 - [t, x], 2 - [t, x, y])
         }
     }
 
@@ -58,17 +59,16 @@ Before running the program component, the configuration of each module must be s
 
     cfg_ebs = config_modules.Config(f'{path}config_modules.json')
 
-    return data, grid, derives, cfg_ebs, param, bconds
+    return data, grid, derives, cfg_ebs, domain, params, boundaries
 ```
 
 The default configuration and corresponding parameters of each module can be viewed in `default_configs.py`. The task instructions are then added to the main `ebs_main.py` file:
 ```Python
 tasks = {
-    'wave_equation': load_data.wave_equation,
-    'burgers_equation': load_data.burgers_equation,
+    'wave_equation': example_wave_equation
 }
 
-title = list(tasks.keys())[1]  # name of the problem/equation
+title = list(tasks.keys())[0] # name of the problem/equation
 ```
 
 ### Results
@@ -102,10 +102,12 @@ The resulting solution fields of partial differential equations are used to cons
 <summary>2. Burgers' equation </summary>
 <br>
 
-$$ \frac{\partial u}{\partial t} +  u \frac{\partial u}{\partial x} = 0, $$
-
-$$ \\ 256\times256, x \in [-4000; 4000], t \in [0; 4]. $$
-
+```math 
+\frac{\partial u}{\partial t} +  u \frac{\partial u}{\partial x} = 0, $$
+```
+```math 
+\\ 256\times256, x \in [-4000; 4000], t \in [0; 4]. $$
+```
 ![title](docs/examples/burgers_equation/distribution.png)
 
 ![title](docs/examples/burgers_equation/figure_all.gif)

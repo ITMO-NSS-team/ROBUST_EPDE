@@ -5,7 +5,6 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import statistics
 
-from tedeous.solver import grid_format_prepare
 from tedeous.device import solver_device
 pio.renderers.default = "browser"
 
@@ -17,8 +16,10 @@ def get_rms(records):
     return math.sqrt(sum([x ** 2 for x in records]) / len(records))
 
 
-def confidence_region_print(data, data_grid, cfg, param, set_solutions, variance, title):
-    solver_device('cpu')
+def confidence_region_print(data, domain, cfg, param, set_solutions, equations, variance, title):
+    if set_solutions is None:
+        return None
+
     variable_names = cfg.params["fit"]["variable_names"]
 
     mean_arr = np.zeros((set_solutions.shape[1], set_solutions.shape[2]))
@@ -44,13 +45,13 @@ def confidence_region_print(data, data_grid, cfg, param, set_solutions, variance
     # case: if dimensionality = 0 - [t, ] and variable_names = [u, v] or [u, v, ..]
     if cfg.params["global_config"]["dimensionality"] == 0:
 
-        prepared_grid_main = grid_format_prepare(data_grid, cfg.params["glob_solver"]["mode"])
+        prepared_grid_main = domain.build(cfg.params["glob_solver"]["mode"])
         x = prepared_grid_main[0].reshape(-1) if cfg.params["glob_solver"]["mode"] == 'mat' else prepared_grid_main[:, 0]
 
         for solution in set_solutions:
             for i, var in enumerate(variable_names):
                 error_rmse = np.sqrt(np.mean((data[i].reshape(-1) - solution[:, i].reshape(-1)) ** 2))
-                print(f'rmse_{var} = {error_rmse}')
+                print(f'{i + 1}. rmse_{var} = {error_rmse}, equation = {equations[i]}')
             print('--------------------------')
 
         confidence_region = torch.cat((upper_bound, torch.flip(lower_bound, dims=(0,))), 0)
@@ -84,15 +85,14 @@ def confidence_region_print(data, data_grid, cfg, param, set_solutions, variance
 
     # case: if dimensionality = 1 - [t, x] and variable_names = [u,]
     if cfg.params["global_config"]["dimensionality"] == 1:
-        # grid = grid_format_prepare(param, "mat") # data_grid #
-        prepared_grid_main = grid_format_prepare(param, cfg.params["glob_solver"]["mode"])
+        prepared_grid_main = domain.build(cfg.params["glob_solver"]["mode"])
 
         if cfg.params["global_config"]["plot_reverse"]:  # important! relationship of parameters between EPDE and SOLVER
             data = np.transpose(data)
 
         for k in range(len(set_solutions)):
             error_rmse = np.sqrt(np.mean((data.reshape(-1) - set_solutions[k].reshape(-1)) ** 2))
-            print(f'rmse = {error_rmse}')
+            print(f'{k + 1}. rmse = {error_rmse}, equation = {equations[k]}')
 
         mean_tens = mean_tens.reshape(-1)
         upper_bound = upper_bound.reshape(-1)
@@ -138,7 +138,7 @@ def confidence_region_print(data, data_grid, cfg, param, set_solutions, variance
                           scene=dict(
                               xaxis_title='x1',
                               yaxis_title='x2',
-                              zaxis_title='u',
+                              zaxis_title=variable_names[0],
                               aspectratio={"x": 1, "y": 1, "z": 1}
                           ),
                           height=800, width=800
