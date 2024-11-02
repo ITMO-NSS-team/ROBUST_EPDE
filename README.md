@@ -103,10 +103,10 @@ The resulting solution fields of partial differential equations are used to cons
 <br>
 
 ```math 
-\frac{\partial u}{\partial t} +  u \frac{\partial u}{\partial x} = 0, $$
+\frac{\partial u}{\partial t} +  u \frac{\partial u}{\partial x} = 0,
 ```
 ```math 
-\\ 256\times256, x \in [-4000; 4000], t \in [0; 4]. $$
+\\ 256\times256, x \in [-4000; 4000], t \in [0; 4].
 ```
 ![title](docs/examples/burgers_equation/distribution.png)
 
