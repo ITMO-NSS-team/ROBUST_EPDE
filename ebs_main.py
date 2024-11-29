@@ -1,5 +1,8 @@
 
-from tasks import example_wave_equation, example_burgers_equation
+from tasks import example_wave_equation, \
+    example_burgers_equation, \
+    example_burgers_equation_small_grid,\
+    example_lotka_volterra_equations
 
 from epde_general import epde_equations
 from bamt_general import bs_experiment
@@ -12,6 +15,8 @@ if __name__ == '__main__':
     tasks = {
         'wave_equation': example_wave_equation,  # 0
         'burgers_equation': example_burgers_equation,  # 1
+        'burgers_equation_small_grid': example_burgers_equation_small_grid,  # 2
+        'lotka_volterra_equations': example_lotka_volterra_equations # 3
     }
 
     title = list(tasks.keys())[0]  # name of the problem (equation/system)

@@ -109,7 +109,7 @@ def bs_experiment(df, cfg, title):
         os.mkdir(path)
 
     if cfg.params["glob_bamt"]["load_result"]:
-        with open(f'{path}/data_equations_{cfg.params["glob_bamt"]["sample_k"]}.pickle', 'rb') as f:
+        with open(f'{path}/data_equations_{cfg.params["glob_bamt"]["sample_k"]}_{cfg.params["glob_bamt"]["nets"]}.pickle', 'rb') as f:
             objects_res = pickle.load(f)
             if cfg.params["correct_structures"]["list_unique"] is not None:
                 token_check(df.columns, objects_res, cfg)
@@ -132,14 +132,24 @@ def bs_experiment(df, cfg, title):
         init_nodes_list.append(init_nodes)
         df_temp = df_temp.drop(init_nodes, axis=1)
 
-    if cfg.params["glob_bamt"]["nets"] == 'Continuous':
+    print(init_nodes_list)
+
+    if cfg.params["glob_bamt"]["nets"] == 'continuous':
         df_main = df.copy()
 
         bn = nets.ContinuousBN(use_mixture=True)
 
-        encoder = preprocessing.LabelEncoder()
-        discretizer = preprocessing.KBinsDiscretizer(n_bins=cfg.params["glob_bamt"]["n_bins"], encode='ordinal', strategy='quantile')
-        p = pp.Preprocessor([('encoder', encoder), ('discretizer', discretizer)])
+        preprocessor_list = []
+        if cfg.params["preprocessor"]["encoder_boolean"]:
+            encoder = preprocessing.LabelEncoder()
+            preprocessor_list.append(('encoder', encoder))
+
+        if cfg.params["preprocessor"]["discretizer_boolean"]:
+            discretizer = preprocessing.KBinsDiscretizer(n_bins=cfg.params["glob_bamt"]["n_bins"], encode='ordinal', strategy=cfg.params["preprocessor"]["strategy"])
+            preprocessor_list.append(('discretizer', discretizer))
+
+        p = pp.Preprocessor(preprocessor_list)
+
         discrete_data, est = p.apply(df_main)
         info = p.info
 
@@ -171,12 +181,12 @@ def bs_experiment(df, cfg, title):
                 df_main = df_main.astype({col: "str"})
 
         all_r = df_main.shape[0]
-        unique_r = df_main.groupby(df.columns.tolist(), as_index=False).size().shape[0]
+        unique_r = df_main.groupby(df_main.columns.tolist(), as_index=False).size().shape[0]
 
         print(f'Out of the {all_r} equations obtained, \033[1m {unique_r} unique \033[0m ({int(unique_r / all_r * 100)} %)')
 
         l_r, l_left = [], []
-        for term in list(df.columns):
+        for term in list(df_main.columns):
             if '_r' in term:
                 l_r.append(term)
             else:
@@ -218,10 +228,10 @@ def bs_experiment(df, cfg, title):
     if cfg.params["glob_bamt"]["save_result"]:
         number_of_files = len(os.listdir(path=f"data/{title}/bamt_result/"))
         if os.path.exists(f'data/{title}/bamt_result/data_equations_{len(objects_res)}.csv'):
-            with open(f'data/{title}/bamt_result/data_equations_{len(objects_res)}_{number_of_files}.pickle', 'wb') as f:
+            with open(f'data/{title}/bamt_result/data_equations_{len(objects_res)}_{cfg.params["glob_bamt"]["nets"]}_{number_of_files}.pickle', 'wb') as f:
                 pickle.dump(objects_res, f, pickle.HIGHEST_PROTOCOL)
         else:
-            with open(f'data/{title}/bamt_result/data_equations_{len(objects_res)}.pickle', 'wb') as f:
+            with open(f'data/{title}/bamt_result/data_equations_{len(objects_res)}_{cfg.params["glob_bamt"]["nets"]}.pickle', 'wb') as f:
                 pickle.dump(objects_res, f, pickle.HIGHEST_PROTOCOL)
 
     return objects_res

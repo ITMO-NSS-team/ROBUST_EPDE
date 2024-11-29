@@ -71,6 +71,8 @@ tasks = {
 title = list(tasks.keys())[0] # name of the problem/equation
 ```
 
+The data archive for equation discovery and recovery is [here](https://github.com/6Naci/data-archive-for-equation-discovery-and-recovery).
+
 ### Results
 
 <details>
@@ -116,6 +118,18 @@ The resulting solution fields of partial differential equations are used to cons
 ![title](docs/examples/burgers_equation/heatmap_1.png)
 
 </details>
+
+<details>
+<summary>3. Burgers' equation (reduced grid) </summary>
+
+```math 
+ \frac{\partial u}{\partial t} +  u \frac{\partial u}{\partial x} = 0,
+```
+```math 
+ \\ 100 \times100, x \in [-1000; 0], t \in [0; 1].
+```
+</details>
+
 
 
 

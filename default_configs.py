@@ -52,13 +52,18 @@ DEFAULT_CONFIG_EBS = '''
 
 "BAMT_config": "commentary",
 "glob_bamt": {
-"nets": "Continuous",
+"nets": "continuous",
 "n_bins": 10,
 "sample_k": 35,
 "lambda": 0.001,
 "plot": false,
 "save_result": false,
 "load_result": false
+},
+"preprocessor":{
+"strategy": "quantile",
+"encoder_boolean": true,
+"discretizer_boolean": true
 },
 "params": {
 "init_nodes": false
@@ -82,7 +87,7 @@ DEFAULT_CONFIG_EBS = '''
 "epochs":5e6
 },
 "Cache":{
-"use_cache":true,
+"use_cache":false,
 "cache_dir":"../cache/",
 "cache_verbose":false,
 "save_always":false,

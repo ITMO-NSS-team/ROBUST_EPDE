@@ -11,6 +11,8 @@ from tedeous.optimizers.optimizer import Optimizer
 from tedeous.device import solver_device, check_device
 from tedeous.models import mat_model
 from epde.interface.interface import EpdeSearch
+from epde.interface.equation_translator import translate_equation
+from func.transition_bs import text_form_of_equation
 from func import transition_bs as transform
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -61,7 +63,17 @@ def solver_equations(cfg, domain, params_full, b_conds, equations, epde_obj: Epd
     dim = cfg.params["global_config"]["dimensionality"] + 1  # (starts from 0 - [t,], 1 - [t, x], 2 - [t, x, y])
     k_variable_names = len(cfg.params["fit"]["variable_names"])
 
-    set_solutions, models = [], []
+    # if not b_conds and k_variable_names == 1:
+    #     equation_temp = equations[0]  # Any equation for boundary_conditions
+    #     text_form = text_form_of_equation(equation_temp, cfg)
+    #     eq_g = translate_equation(text_form, epde_obj.pool)
+    #     b_conds = eq_g.boundary_conditions(cfg.params["glob_solver"]["required_bc_ord"], full_domain=True)
+    #     principal_bcond_shape = b_conds[0][1].shape
+    #     # if grid is only square, else !error!
+    #     for i in range(len(b_conds)):
+    #         b_conds[i][1] = b_conds[i][1].reshape(principal_bcond_shape)
+
+    set_solutions = []
 
     for equation_i in equations:
         start = time.time()
