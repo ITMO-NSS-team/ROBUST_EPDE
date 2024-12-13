@@ -11,7 +11,6 @@ from func import obj_collection as collection
 
 
 def equation_definition(grid, config_epde, title):
-
     selected_module = __import__(f'tasks.example_{title}', fromlist=[''])
 
     dimensionality = config_epde.params["global_config"]["dimensionality"]
@@ -79,13 +78,8 @@ def equation_fit(epde_search_obj, data, derives, config_epde, add_tokens):
 
 
 def epde_equations(u, grid_u, derives, cfg, variance, title):
-
     if not (os.path.exists(f'data/{title}/epde_result')):
         os.mkdir(f'data/{title}/epde_result')
-
-    if cfg.params["glob_epde"]["load_result"]:
-        # Need to check the existence of the file or send the path
-        return pd.read_csv(f'data/{title}/epde_result/output_main_{title}.csv', index_col='Unnamed: 0', sep='\t', encoding='utf-8'), False
 
     k = 0  # number of equations (final)
     variable_names = cfg.params["fit"]["variable_names"]  # list of objective function names
@@ -99,6 +93,25 @@ def epde_equations(u, grid_u, derives, cfg, variance, title):
             k = pickle.load(f)
 
     epde_obj, add_tokens = equation_definition(grid_u, cfg, title)
+
+    if cfg.params["glob_epde"]["load_result"]:
+
+        if cfg.params["glob_solver"]["type"] == 'odeint':
+            epde_obj.create_pool(data=u, variable_names=cfg.params["fit"]["variable_names"],
+                                 derivs=derives if derives is not None else None,
+                                 max_deriv_order=cfg.params["fit"]["max_deriv_order"],
+                                 additional_tokens=add_tokens, data_fun_pow=cfg.params["fit"]["data_fun_pow"])
+            # deriv_fun_pow=deriv_fun_pow, data_nn=data_nn, fourier_layers=fourier_layers, fourier_params=fourier_params)
+
+            # Need to check the existence of the file or send the path
+            return pd.read_csv(f'data/{title}/epde_result/output_main_{title}.csv', index_col='Unnamed: 0',
+                               sep='\t',
+                               encoding='utf-8'), epde_obj
+        else:
+            return pd.read_csv(f'data/{title}/epde_result/output_main_{title}.csv', index_col='Unnamed: 0',
+                               sep='\t',
+                               encoding='utf-8'), False
+
     for test_idx in np.arange(cfg.params["glob_epde"]["test_iter_limit"]):
         while True:
             try:

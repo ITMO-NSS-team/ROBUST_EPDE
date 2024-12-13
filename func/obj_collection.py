@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import pandas as pd
 
-regex = re.compile('freq:\s\d\S\d+')  # Using regular expression for frequency delete (sin/cos)
+regex = re.compile(', freq:\s\d\S\d+')  # Using regular expression for frequency delete (sin/cos)
 
 
 def dict_update(d_main, term, coeff, k):

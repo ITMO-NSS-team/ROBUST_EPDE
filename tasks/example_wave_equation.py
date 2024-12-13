@@ -135,7 +135,7 @@ def load_data():
 
     bamt_config = {
         "glob_bamt": {
-            "nets": "Continuous",
+            "nets": "continuous", # "discrete", # "continuous",
             "n_bins": 5,
             "sample_k": 35,
             "lambda": 0.01,

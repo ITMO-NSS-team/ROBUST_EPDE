@@ -48,10 +48,11 @@ def confidence_region_print(data, domain, cfg, param, set_solutions, equations, 
         prepared_grid_main = domain.build(cfg.params["glob_solver"]["mode"])
         x = prepared_grid_main[0].reshape(-1) if cfg.params["glob_solver"]["mode"] == 'mat' else prepared_grid_main[:, 0]
 
-        for solution in set_solutions:
+        for n, solution in enumerate(set_solutions):
+            print(f'{n + 1}. equations = {equations[n]}')
             for i, var in enumerate(variable_names):
                 error_rmse = np.sqrt(np.mean((data[i].reshape(-1) - solution[:, i].reshape(-1)) ** 2))
-                print(f'{i + 1}. rmse_{var} = {error_rmse}, equation = {equations[i]}')
+                print(f'rmse_{var} = {error_rmse}')
             print('--------------------------')
 
         confidence_region = torch.cat((upper_bound, torch.flip(lower_bound, dims=(0,))), 0)

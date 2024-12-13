@@ -130,6 +130,47 @@ The resulting solution fields of partial differential equations are used to cons
 ```
 </details>
 
+<details>
+<summary>4. Lotka-Volterra equations </summary>
+
+```math 
+ \begin{equation*}
+ \begin{cases}
+  \frac{\partial u}{\partial t} = \normalsize 0.55 \cdot u - 0.028 \cdot u \cdot v, 
+   \\
+   \frac{\partial v}{\partial t} = \normalsize - 0.84 \cdot v + 0.026 \cdot u \cdot v.
+ \end{cases}
+\end{equation*}
+```
+```math 
+ \\ t \in [0, 20],
+ \\ u_0, \ v_0 = 30, 4.
+```
+
+![title](docs/examples/lotka_volterra_equations/figure_1.png)
+
+</details>
+
+<details>
+<summary>5. Pendulum equations </summary>
+
+```math 
+    \begin{equation}
+    \begin{gathered}
+    \begin{cases}
+    \dot\sigma  =  z, 
+    \\
+    \dot z =  -\frac{1}{\sqrt{5}} z -\sin(\sigma) + 0.2 \quad 
+    \end{cases}
+    \end{gathered}
+    \end{equation}
+```
+```math 
+ \\ t \in [0, 20],
+ \\ \sigma_0, \ z_0 = \frac{\pi}{2}, 0.5.
+```
+</details>
+
 
 
 

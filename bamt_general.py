@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import random
 import re
 import itertools
 import dill as pickle
@@ -84,7 +85,11 @@ def get_objects(synth_data, config_bamt):
     for i in range(len(synth_data)):
         object_row = {}
         for col in synth_data.columns:
-            object_row[synth_data[col].name] = synth_data[col].values[i]
+            value = synth_data[col].values[i]
+            if isinstance(value, str):
+                object_row[synth_data[col].name] = np.float64(value)
+            else:
+                object_row[synth_data[col].name] = value
         objects.append(object_row)
 
     objects_result = []
@@ -117,7 +122,7 @@ def bs_experiment(df, cfg, title):
 
     # Rounding values
     for col in df.columns:
-        df[col] = df[col].round(decimals=16)
+        df[col] = df[col].round(decimals=cfg.params["glob_bamt"]["round"])
     # Deleting rows with condition
     df = df.loc[(df.sum(axis=1) != -len(cfg.params["fit"]["variable_names"])), (df.sum(axis=0) != 0)]
     # Deleting null columns
@@ -172,11 +177,11 @@ def bs_experiment(df, cfg, title):
 
         df_main = df.copy()
 
-        for node_i in init_nodes_list:
-            df_main.rename(columns={node_i: node_i[:-2] + '_r_' + node_i[-1]}, inplace=True)
+        # for node_i in init_nodes_list:
+        #     df_main.rename(columns={node_i: node_i[:-2] + '_r_' + node_i[-1]}, inplace=True)
 
         for col in df_main.columns:
-            if '_r' in col:
+            if col in init_nodes_list:
                 df_main = df_main.astype({col: "int64"})
                 df_main = df_main.astype({col: "str"})
 
@@ -187,7 +192,7 @@ def bs_experiment(df, cfg, title):
 
         l_r, l_left = [], []
         for term in list(df_main.columns):
-            if '_r' in term:
+            if term in init_nodes_list:
                 l_r.append(term)
             else:
                 l_left.append(term)
@@ -205,6 +210,7 @@ def bs_experiment(df, cfg, title):
     params = {"init_nodes": init_nodes_list} if not cfg.params["params"]["init_nodes"] else cfg.params[
         "params"]
 
+    print(params)
     bn.add_edges(discrete_data, scoring_function=('K2', K2Score), params=params)
     bn.plot(f'output_main_{title}.html') # , f'{path}/'
     bn.fit_parameters(df_main)

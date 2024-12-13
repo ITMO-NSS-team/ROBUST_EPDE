@@ -52,6 +52,7 @@ DEFAULT_CONFIG_EBS = '''
 
 "BAMT_config": "commentary",
 "glob_bamt": {
+"round": 16,
 "nets": "continuous",
 "n_bins": 10,
 "sample_k": 35,
@@ -74,6 +75,7 @@ DEFAULT_CONFIG_EBS = '''
 
 "SOLVER_config": "commentary",
 "glob_solver": {
+"type": "tedeous",
 "mode": "NN",
 "reverse": false,
 "required_bc_ord": [2, 2],
